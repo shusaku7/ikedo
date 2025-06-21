@@ -2,8 +2,9 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>YouTube動画プレイヤー</title>
+  <title>PlayView</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="favicon.png" type="image/png">
   <style>
     body {
       background: #fdfdfd;
@@ -17,7 +18,7 @@
     h1 {
       font-size: 2.7rem;
       margin-bottom: 30px;
-      background: linear-gradient(to right, #e53935, #fbc02d, #43a047, #1e88e5);
+      background: linear-gradient(to right, #4caf50, #66bb6a);
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -39,14 +40,14 @@
 
     input:focus {
       outline: none;
-      box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.2);
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
     }
 
     button {
       margin-left: 10px;
       padding: 14px 25px;
       font-size: 16px;
-      background-color: #1e88e5; /* 明るい青系 */
+      background-color: #4caf50;
       color: #fff;
       border: none;
       border-radius: 9999px;
@@ -55,7 +56,7 @@
     }
 
     button:hover {
-      background-color: #1565c0;
+      background-color: #388e3c;
     }
 
     .iframe-container {
@@ -71,7 +72,6 @@
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
-    /* 履歴パネル */
     #history-panel {
       position: fixed;
       top: 0;
@@ -93,7 +93,7 @@
 
     #history-panel h2 {
       font-size: 1.4rem;
-      color: #1565c0;
+      color: #4caf50;
       border-bottom: 1px solid #ccc;
       padding-bottom: 10px;
       margin-bottom: 10px;
@@ -117,19 +117,20 @@
 
     .history-item span {
       font-size: 13px;
-      color: #1e88e5;
+      color: #4caf50;
       word-break: break-word;
     }
 
     .toggle-history-btn {
       margin-top: 20px;
-      background-color: #4db6ac; /* 青緑系 */
+      background-color: #66bb6a;
     }
 
     .toggle-history-btn:hover {
-      background-color: #00897b;
+      background-color: #388e3c;
     }
 
+    /* ✅ モバイル対応 */
     @media (max-width: 600px) {
       input {
         width: 100%;
@@ -147,26 +148,44 @@
 
       #history-panel {
         width: 100%;
+        right: -100%;
+      }
+
+      #history-panel.open {
+        right: 0;
+      }
+
+      .history-back-button {
+        display: block;
+        margin-bottom: 10px;
+        background-color: #e0e0e0;
+        color: #333;
+        padding: 8px 14px;
+        border-radius: 8px;
+        border: none;
+        font-size: 14px;
+        cursor: pointer;
       }
     }
   </style>
 </head>
 <body>
-  <h1>YouTube Video Viewer</h1>
-  <input id="youtube-url" type="text" placeholder="YouTubeのURLを入力してください">
+  <h1>PlayView</h1>
+  <input id="youtube-url" type="text" placeholder="動画のURLを入力してください">
   <button onclick="loadVideo()">▶ 再生</button>
-  <button class="toggle-history-btn" onclick="toggleHistory()">再生履歴</button>
+  <button class="toggle-history-btn" onclick="toggleHistory()">📜 再生履歴</button>
 
   <div class="iframe-container" id="player"></div>
 
   <div id="history-panel">
+    <button class="history-back-button" onclick="closeHistory()">← 戻る</button>
     <h2>再生履歴</h2>
     <div id="history-list"></div>
   </div>
 
   <script>
     function extractVideoID(url) {
-      const regExp = /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&?/]+)/;
+      const regExp = /(?:youtube\\.com\\/(?:watch\\?v=|embed\\/)|youtu\\.be\\/)([^&?/]+)/;
       const match = url.match(regExp);
       return match ? match[1] : null;
     }
@@ -176,15 +195,15 @@
       const videoId = videoIdFromHistory || extractVideoID(url);
 
       if (videoId) {
-        const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+        const embedUrl = \`https://www.youtube.com/embed/\${videoId}\`;
         document.getElementById("player").innerHTML =
-          `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
+          \`<iframe src="\${embedUrl}" allowfullscreen></iframe>\`;
 
         if (!videoIdFromHistory) {
           saveToHistory(videoId);
         }
       } else {
-        alert("正しいYouTubeのURLを入力してください");
+        alert("正しい動画のURLを入力してください");
       }
     }
 
@@ -208,11 +227,11 @@
         item.className = "history-item";
         item.onclick = () => loadVideo(id);
 
-        const thumb = `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
-        item.innerHTML = `
-          <img src="${thumb}" alt="サムネイル">
-          <span>https://youtu.be/${id}</span>
-        `;
+        const thumb = \`https://img.youtube.com/vi/\${id}/mqdefault.jpg\`;
+        item.innerHTML = \`
+          <img src="\${thumb}" alt="サムネイル">
+          <span>https://youtu.be/\${id}</span>
+        \`;
         list.appendChild(item);
       });
     }
@@ -222,8 +241,14 @@
       panel.classList.toggle("open");
     }
 
+    function closeHistory() {
+      const panel = document.getElementById("history-panel");
+      panel.classList.remove("open");
+    }
+
     window.onload = renderHistory;
   </script>
 </body>
 </html>
+
 
