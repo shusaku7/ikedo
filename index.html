@@ -1,255 +1,188 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
-  <title>PlayView</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" href="favicon.png" type="image/png">
+  <title>PlayView</title>
+  <link rel="icon" href="green-logo.png">
   <style>
     body {
-      background: #fdfdfd;
-      color: #333;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 40px 20px;
-      text-align: center;
+      background-color: #f5f5f5;
+      color: #333;
     }
 
-    h1 {
-      font-size: 2.7rem;
-      margin-bottom: 30px;
-      background: linear-gradient(to right, #4caf50, #66bb6a);
-      background-clip: text;
+    header {
+      display: flex;
+      align-items: center;
+      background-color: #fff;
+      padding: 10px 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    header img {
+      height: 40px;
+      margin-right: 10px;
+    }
+
+    header h1 {
+      font-size: 24px;
+      background: linear-gradient(to right, #2ecc71, #27ae60);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      font-weight: 700;
     }
 
-    input {
-      width: 60%;
-      max-width: 600px;
-      padding: 14px 20px;
+    .container {
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 50px;
       font-size: 16px;
-      border: none;
-      border-radius: 9999px;
-      background: #ffffff;
-      color: #000;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
-    }
-
-    input:focus {
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
     }
 
     button {
-      margin-left: 10px;
-      padding: 14px 25px;
+      padding: 10px 20px;
       font-size: 16px;
-      background-color: #4caf50;
-      color: #fff;
+      background-color: #2ecc71;
+      color: white;
       border: none;
-      border-radius: 9999px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      margin-right: 10px;
     }
 
-    button:hover {
-      background-color: #388e3c;
-    }
-
-    .iframe-container {
-      margin-top: 30px;
-    }
-
-    iframe {
-      width: 90%;
-      max-width: 900px;
-      height: 500px;
+    #player iframe {
+      width: 100%;
+      height: 400px;
+      margin-top: 20px;
       border: none;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
     #history-panel {
       position: fixed;
       top: 0;
-      right: -320px;
+      right: 0;
       width: 300px;
       height: 100%;
-      background: #ffffff;
-      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-      overflow-y: auto;
-      transition: right 0.3s ease;
+      background-color: #ffffff;
+      box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
       padding: 20px;
-      text-align: left;
-      z-index: 999;
+      overflow-y: auto;
     }
 
     #history-panel.open {
-      right: 0;
-    }
-
-    #history-panel h2 {
-      font-size: 1.4rem;
-      color: #4caf50;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 10px;
-      margin-bottom: 10px;
+      transform: translateX(0);
     }
 
     .history-item {
-      margin: 10px 0;
-      cursor: pointer;
       display: flex;
       align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
     }
 
     .history-item img {
-      width: 90px;
-      height: 60px;
-      margin-right: 10px;
-      border-radius: 6px;
-      object-fit: cover;
-      border: 1px solid #ccc;
-    }
-
-    .history-item span {
-      font-size: 13px;
-      color: #4caf50;
-      word-break: break-word;
-    }
-
-    .toggle-history-btn {
-      margin-top: 20px;
-      background-color: #66bb6a;
-    }
-
-    .toggle-history-btn:hover {
-      background-color: #388e3c;
-    }
-
-    /* ✅ モバイル対応 */
-    @media (max-width: 600px) {
-      input {
-        width: 100%;
-        margin-bottom: 10px;
-      }
-
-      button {
-        width: 100%;
-        margin-top: 10px;
-      }
-
-      iframe {
-        height: 250px;
-      }
-
-      #history-panel {
-        width: 100%;
-        right: -100%;
-      }
-
-      #history-panel.open {
-        right: 0;
-      }
-
-      .history-back-button {
-        display: block;
-        margin-bottom: 10px;
-        background-color: #e0e0e0;
-        color: #333;
-        padding: 8px 14px;
-        border-radius: 8px;
-        border: none;
-        font-size: 14px;
-        cursor: pointer;
-      }
+      width: 80px;
+      height: auto;
+      border-radius: 4px;
     }
   </style>
 </head>
+
 <body>
-  <h1>PlayView</h1>
-  <input id="youtube-url" type="text" placeholder="動画のURLを入力してください">
-  <button onclick="loadVideo()">▶ 再生</button>
-  <button class="toggle-history-btn" onclick="toggleHistory()">再生履歴</button>
-
-  <div class="iframe-container" id="player"></div>
-
+  <header>
+    <img src="green-logo.png" alt="Logo">
+    <h1>PlayView</h1>
+  </header>
+  <div class="container">
+    <input type="text" id="youtube-url" placeholder="動画URLを入力">
+    <button onclick="loadVideo()">再生</button>
+    <button onclick="toggleHistory()">再生履歴</button>
+    <div id="player"></div>
+  </div>
   <div id="history-panel">
-    <button class="history-back-button" onclick="closeHistory()">← 戻る</button>
-    <h2>再生履歴</h2>
+    <button onclick="closeHistory()">戻る</button>
+    <h3>再生履歴</h3>
     <div id="history-list"></div>
   </div>
 
   <script>
-  function extractVideoID(url) {
-    const regExp = /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&?/]+)/;
-    const match = url.match(regExp);
-    return match ? match[1] : null;
-  }
+    function extractVideoID(url) {
+      const regExp = /(?:youtube\.com\/(?:watch\?v=|embed\/)\|youtu\.be\/)([^&?/]+)/;
+      const match = url.match(regExp);
+      return match ? match[1] : null;
+    }
 
-  function loadVideo(videoIdFromHistory = null) {
-    let url = document.getElementById("youtube-url").value;
-    const videoId = videoIdFromHistory || extractVideoID(url);
+    function loadVideo(videoIdFromHistory = null) {
+      let url = document.getElementById("youtube-url").value;
+      const videoId = videoIdFromHistory || extractVideoID(url);
 
-    if (videoId) {
-      const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-      document.getElementById("player").innerHTML =
-        `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
+      if (videoId) {
+        const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+        document.getElementById("player").innerHTML =
+          `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
 
-      if (!videoIdFromHistory) {
-        saveToHistory(videoId);
+        if (!videoIdFromHistory) {
+          saveToHistory(videoId);
+        }
+      } else {
+        alert("正しい動画のURLを入力してください");
       }
-    } else {
-      alert("正しい動画のURLを入力してください");
     }
-  }
 
-  function saveToHistory(videoId) {
-    let history = JSON.parse(localStorage.getItem("videoHistory")) || [];
-    if (!history.includes(videoId)) {
-      history.unshift(videoId);
-      if (history.length > 20) history.pop();
-      localStorage.setItem("videoHistory", JSON.stringify(history));
+    function saveToHistory(videoId) {
+      let history = JSON.parse(localStorage.getItem("videoHistory")) || [];
+      if (!history.includes(videoId)) {
+        history.unshift(videoId);
+        if (history.length > 20) history.pop();
+        localStorage.setItem("videoHistory", JSON.stringify(history));
+      }
+      renderHistory();
     }
-    renderHistory();
-  }
 
-  function renderHistory() {
-    const history = JSON.parse(localStorage.getItem("videoHistory")) || [];
-    const list = document.getElementById("history-list");
-    list.innerHTML = "";
+    function renderHistory() {
+      const history = JSON.parse(localStorage.getItem("videoHistory")) || [];
+      const list = document.getElementById("history-list");
+      list.innerHTML = "";
 
-    history.forEach(id => {
-      const item = document.createElement("div");
-      item.className = "history-item";
-      item.onclick = () => loadVideo(id);
+      history.forEach(id => {
+        const item = document.createElement("div");
+        item.className = "history-item";
+        item.onclick = () => loadVideo(id);
 
-      const thumb = `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
-      item.innerHTML = `
-        <img src="${thumb}" alt="サムネイル">
-        <span>https://youtu.be/${id}</span>
-      `;
-      list.appendChild(item);
-    });
-  }
+        const thumb = `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
+        item.innerHTML = `
+          <img src="${thumb}" alt="サムネイル">
+          <span>https://youtu.be/${id}</span>
+        `;
+        list.appendChild(item);
+      });
+    }
 
-  function toggleHistory() {
-    const panel = document.getElementById("history-panel");
-    panel.classList.toggle("open");
-  }
+    function toggleHistory() {
+      const panel = document.getElementById("history-panel");
+      panel.classList.toggle("open");
+    }
 
-  function closeHistory() {
-    const panel = document.getElementById("history-panel");
-    panel.classList.remove("open");
-  }
+    function closeHistory() {
+      const panel = document.getElementById("history-panel");
+      panel.classList.remove("open");
+    }
 
-  window.onload = renderHistory;
-</script>
-
+    window.onload = renderHistory;
+  </script>
 </body>
+
 </html>
-
-
