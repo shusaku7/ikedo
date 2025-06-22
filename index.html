@@ -184,70 +184,71 @@
   </div>
 
   <script>
-    function extractVideoID(url) {
-      const regExp = /(?:youtube\\.com\\/(?:watch\\?v=|embed\\/)|youtu\\.be\\/)([^&?/]+)/;
-      const match = url.match(regExp);
-      return match ? match[1] : null;
-    }
+  function extractVideoID(url) {
+    const regExp = /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&?/]+)/;
+    const match = url.match(regExp);
+    return match ? match[1] : null;
+  }
 
-    function loadVideo(videoIdFromHistory = null) {
-      let url = document.getElementById("youtube-url").value;
-      const videoId = videoIdFromHistory || extractVideoID(url);
+  function loadVideo(videoIdFromHistory = null) {
+    let url = document.getElementById("youtube-url").value;
+    const videoId = videoIdFromHistory || extractVideoID(url);
 
-      if (videoId) {
-        const embedUrl = \`https://www.youtube.com/embed/\${videoId}\`;
-        document.getElementById("player").innerHTML =
-          \`<iframe src="\${embedUrl}" allowfullscreen></iframe>\`;
+    if (videoId) {
+      const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+      document.getElementById("player").innerHTML =
+        `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
 
-        if (!videoIdFromHistory) {
-          saveToHistory(videoId);
-        }
-      } else {
-        alert("正しい動画のURLを入力してください");
+      if (!videoIdFromHistory) {
+        saveToHistory(videoId);
       }
+    } else {
+      alert("正しい動画のURLを入力してください");
     }
+  }
 
-    function saveToHistory(videoId) {
-      let history = JSON.parse(localStorage.getItem("videoHistory")) || [];
-      if (!history.includes(videoId)) {
-        history.unshift(videoId);
-        if (history.length > 20) history.pop();
-        localStorage.setItem("videoHistory", JSON.stringify(history));
-      }
-      renderHistory();
+  function saveToHistory(videoId) {
+    let history = JSON.parse(localStorage.getItem("videoHistory")) || [];
+    if (!history.includes(videoId)) {
+      history.unshift(videoId);
+      if (history.length > 20) history.pop();
+      localStorage.setItem("videoHistory", JSON.stringify(history));
     }
+    renderHistory();
+  }
 
-    function renderHistory() {
-      const history = JSON.parse(localStorage.getItem("videoHistory")) || [];
-      const list = document.getElementById("history-list");
-      list.innerHTML = "";
+  function renderHistory() {
+    const history = JSON.parse(localStorage.getItem("videoHistory")) || [];
+    const list = document.getElementById("history-list");
+    list.innerHTML = "";
 
-      history.forEach(id => {
-        const item = document.createElement("div");
-        item.className = "history-item";
-        item.onclick = () => loadVideo(id);
+    history.forEach(id => {
+      const item = document.createElement("div");
+      item.className = "history-item";
+      item.onclick = () => loadVideo(id);
 
-        const thumb = \`https://img.youtube.com/vi/\${id}/mqdefault.jpg\`;
-        item.innerHTML = \`
-          <img src="\${thumb}" alt="サムネイル">
-          <span>https://youtu.be/\${id}</span>
-        \`;
-        list.appendChild(item);
-      });
-    }
+      const thumb = `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
+      item.innerHTML = `
+        <img src="${thumb}" alt="サムネイル">
+        <span>https://youtu.be/${id}</span>
+      `;
+      list.appendChild(item);
+    });
+  }
 
-    function toggleHistory() {
-      const panel = document.getElementById("history-panel");
-      panel.classList.toggle("open");
-    }
+  function toggleHistory() {
+    const panel = document.getElementById("history-panel");
+    panel.classList.toggle("open");
+  }
 
-    function closeHistory() {
-      const panel = document.getElementById("history-panel");
-      panel.classList.remove("open");
-    }
+  function closeHistory() {
+    const panel = document.getElementById("history-panel");
+    panel.classList.remove("open");
+  }
 
-    window.onload = renderHistory;
-  </script>
+  window.onload = renderHistory;
+</script>
+
 </body>
 </html>
 
